@@ -22,6 +22,7 @@ public class Consumer {
                 "2- Заявление на отчисление\n" +
                 "3 - Заявление на академический отпуск\n" +
                 "4 - Заявление на зачисление");
+
         String exchangeNum = new Scanner(System.in).nextLine();
         String exchangeName;
         switch (exchangeNum) {
