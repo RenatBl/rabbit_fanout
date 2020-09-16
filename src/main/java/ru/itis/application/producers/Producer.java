@@ -13,13 +13,7 @@ import java.util.concurrent.TimeoutException;
 
 public class Producer {
 
-    private final static String[] EXCHANGES = {
-            "dismissal",
-            "reduction",
-            "academic_leave",
-            "enrollment"
-    };
-
+    private final static String EXCHANGE_NAME = "documents";
     private final static String EXCHANGE_TYPE = "fanout";
 
     public static void main(String[] args) {
@@ -30,17 +24,13 @@ public class Producer {
             Connection connection = connectionFactory.newConnection();
             Channel channel = connection.createChannel();
 
-            for (String exchange : EXCHANGES) {
-                channel.exchangeDeclare(exchange, EXCHANGE_TYPE);
-            }
+                channel.exchangeDeclare(EXCHANGE_NAME, EXCHANGE_TYPE);
 
             ObjectMapper objectMapper = new ObjectMapper();
             PersonalData personalData = getData();
-            byte[] bytes = objectMapper.valueToTree(personalData).asText().getBytes();
+            byte[] bytes = objectMapper.writeValueAsBytes(personalData);
 
-            for (String exchange : EXCHANGES) {
-                channel.basicPublish(exchange, "",null, bytes);
-            }
+                channel.basicPublish(EXCHANGE_NAME, "",null, bytes);
         } catch (IOException | TimeoutException e) {
             throw new IllegalArgumentException(e);
         }
@@ -49,7 +39,6 @@ public class Producer {
     private static PersonalData getData() {
         Scanner in = new Scanner(System.in);
 
-        String docType;
         String name;
         String surname;
         String patronymic;
@@ -59,28 +48,6 @@ public class Producer {
         Date issueDate = new Date();
         Date filingDate = new Date();
 
-        System.out.println("Выберите тип заявления:\n" +
-                "1 - заявление на увольнение\n" +
-                "2 - заявление на отчисление\n" +
-                "3 - заявление на получение академического отпуска\n" +
-                "4 - заявление на зачисление");
-        String type = in.nextLine();
-        switch (type) {
-            case "1":
-                docType = "dismissal";
-                break;
-            case "2":
-                docType = "reduction";
-                break;
-            case "3":
-                docType = "academic_leave";
-                break;
-            case "4":
-                docType = "enrollment";
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong data");
-        }
         System.out.println("Введите Ваше имя");
         name = in.nextLine();
         System.out.println("Введите Вашу фамилию");
@@ -109,7 +76,6 @@ public class Producer {
         filingDate.setYear(in.nextInt());
 
         return PersonalData.builder()
-                .documentType(docType)
                 .name(name)
                 .surname(surname)
                 .patronymic(patronymic)
@@ -120,4 +86,17 @@ public class Producer {
                 .filingDate(filingDate)
                 .build();
     }
+
+/*    private static PersonalData getData() {
+        Date issueDate = new Date();
+        Date filingDate = new Date();
+        issueDate.setDate(12);
+        issueDate.setMonth(9);
+        issueDate.setYear(2019);
+        filingDate.setDate(12);
+        filingDate.setMonth(12);
+        filingDate.setYear(2020);
+        return new PersonalData("Renat", "Blinov", "Konstantinovich", "20", "9229", "122345", issueDate, filingDate);
+    }*/
+
 }

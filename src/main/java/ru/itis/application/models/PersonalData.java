@@ -23,5 +23,5 @@ public class PersonalData implements Serializable {
     private Date issueDate;
     private Date filingDate;
 
-    private String documentType;
+//    private String documentType;
 }

@@ -9,6 +9,7 @@ import ru.itis.application.models.PersonalData;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.time.LocalDateTime;
 import java.util.Date;
 
 public class PdfConverter {
@@ -30,29 +31,19 @@ public class PdfConverter {
     public void createDocument(String data) {
         ObjectMapper objectMapper = new ObjectMapper();
         PersonalData personalData = objectMapper.readValue(data, PersonalData.class);
-        switch (personalData.getDocumentType()) {
-            case "dismissal":
-                createDismissalDocument(personalData);
-                break;
-            case "reduction":
-                createReductionDocument(personalData);
-                break;
-            case "academic_leave":
-                createAcademicLeaveDocument(personalData);
-                break;
-            case "enrollment":
-                createEnrollmentDocument(personalData);
-                break;
-            default:
-                throw new IllegalArgumentException("Wrong data");
-        }
+
+        createDismissalDocument(personalData);
+        createReductionDocument(personalData);
+        createAcademicLeaveDocument(personalData);
+        createEnrollmentDocument(personalData);
     }
 
     private void createDismissalDocument(PersonalData personalData) throws DocumentException {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(new File(path + "\\" +
-                    personalData.getSurname() + "_" + personalData.getDocumentType() + ".pdf")));
+                    personalData.getSurname() + "_" + "dismissal" + LocalDateTime.now().getDayOfMonth() + "_" +
+                    LocalDateTime.now().getMonthValue() + "_" + LocalDateTime.now().getYear() + ".pdf")));
             document.open();
 
             addMetadata(document, "Letter of dismissal " + personalData.getSurname(), personalData.getSurname());
@@ -81,7 +72,8 @@ public class PdfConverter {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(new File(path + "\\" +
-                    personalData.getSurname() + "_" + personalData.getDocumentType() + ".pdf")));
+                    personalData.getSurname() + "_" + "reduction" + LocalDateTime.now().getDayOfMonth() + "_" +
+                    LocalDateTime.now().getMonthValue() + "_" + LocalDateTime.now().getYear() + ".pdf")));
             document.open();
 
             addMetadata(document, "Application for reduction " + personalData.getSurname(),
@@ -110,7 +102,8 @@ public class PdfConverter {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(new File(path + "\\" +
-                    personalData.getSurname() + "_" + personalData.getDocumentType() + ".pdf")));
+                    personalData.getSurname() + "_" + "leave" + LocalDateTime.now().getDayOfMonth() + "_" +
+                    LocalDateTime.now().getMonthValue() + "_" + LocalDateTime.now().getYear() + ".pdf")));
             document.open();
 
             addMetadata(document, "Application for academic leave " + personalData.getSurname(),
@@ -138,7 +131,8 @@ public class PdfConverter {
         Document document = new Document();
         try {
             PdfWriter.getInstance(document, new FileOutputStream(new File(path + "\\" +
-                    personalData.getSurname() + "_" + personalData.getDocumentType() + ".pdf")));
+                    personalData.getSurname() + "_" + "enrollment" + LocalDateTime.now().getDayOfMonth() + "_" +
+                    LocalDateTime.now().getMonthValue() + "_" + LocalDateTime.now().getYear() + ".pdf")));
             document.open();
 
             addMetadata(document, "Application for enrollment " + personalData.getSurname(),
